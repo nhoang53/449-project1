@@ -53,8 +53,8 @@ def all_votes():
 
     return list(all_votes)
 
-# view vote by id http://127.0.0.1:5000/api/v1/resources/votesid/1
-@app.route('/api/v1/resources/votesid/<int:id>', methods=['GET'])
+# view vote by id http://127.0.0.1:5000/api/v1/resources/votebyid/1
+@app.route('/api/v1/resources/votebyid/<int:id>', methods=['GET'])
 def vote_by_id(id):
     vote = queries.vote_by_id(id=id)
     if vote:
@@ -71,7 +71,7 @@ def vote_by_postid(postid):
     else:
         raise exceptions.NotFound()
 
-# top n post score
+# top n post score http://127.0.0.1:5000/api/v1/resources/toppostscore/3
 @app.route('/api/v1/resources/toppostscore/<int:topscore>', methods=['GET'])
 def top_post_score(topscore):
     top = queries.top_post_score(topscore=topscore)
@@ -80,7 +80,7 @@ def top_post_score(topscore):
     else:
         raise exceptions.NotFound()
 
-# up_vote a post by postID
+# up_vote a post by postID http://127.0.0.1:5000/api/v1/resources/upvote
 @app.route('/api/v1/resources/upvote', methods=['GET', 'PUT'])
 def up_votes():
     if request.method == 'GET':
@@ -112,7 +112,7 @@ def filter_votes(query_parameters):
     results = queries._engine.execute(query, to_filter).fetchall()
     return list(map(dict, results))
 
-# down_vote a post by postID
+# down_vote a post by postID http://127.0.0.1:5000/api/v1/resources/downvote
 @app.route('/api/v1/resources/downvote', methods=['GET', 'PUT'])
 def down_votes():
     if request.method == 'GET':
@@ -128,7 +128,7 @@ def down_vote(vote):
     down_vote_update = queries.down_vote(**vote)
     return filter_votes(vote), status.HTTP_200_OK
 
-# list sorted by score
+# list sorted by score http://127.0.0.1:5000/api/v1/resources/listsortedbyscore
 @app.route('/api/v1/resources/listsortedbyscore', methods=['GET', 'POST'])
 def list_sorted():
     if request.method == 'GET':
@@ -141,72 +141,3 @@ def list_sorted_by_score(listPostID):
     list_sorted = queries.list_sorted_by_score(postID=listPostID)
     return list(list_sorted), status.HTTP_200_OK
 
-# def filter_listScore(query_parameters):
-#     postID = query_parameters.get('postID')
-#     query = "SELECT * FROM votes WHERE"
-#     to_filter = []
-
-#     if postID:
-#         query += ' postID IN(?)'
-#         to_filter.append(postID)
-#     if not (postID):
-#         raise exceptions.NotFound()
-
-#     query = query[:-4] + ';'
-#     results = queries._engine.execute(query, to_filter).fetchall()
-#     return list(map(dict, results))
-
-
-# # create vote
-# @app.route('/api/v1/resources/votes', methods=['GET', 'POST'])
-# def votes2():
-#     if request.method == 'GET':
-#         return filter_votes(request.args)
-#     elif request.method == 'POST':
-#         return create_vote(request.data)
-
-
-# def create_vote(vote):
-#     required_fields = ['id', 'postID', 'upVoted', 'downVoted']
-
-#     if not all([field in vote for field in required_fields]):
-#         raise exceptions.ParseError()
-#     try:
-#         vote['id'] = queries.create_vote(**vote)
-#     except Exception as e:
-#         return { 'error': str(e) }, status.HTTP_409_CONFLICT
-
-#     return vote, status.HTTP_201_CREATED, {
-#         'Location': f'/api/v1/resources/votes/{vote["id"]}'
-#     }
-
-
-# def filter_votes(query_parameters):
-#     id = query_parameters.get('id')
-#     postID = query_parameters.get('postID')
-#     upVoted = query_parameters.get('upVoted')
-#     downVoted = query_parameters.get('downVoted')
-
-#     query = "SELECT * FROM votes WHERE"
-#     to_filter = []
-
-#     if id:
-#         query += ' id=? AND'
-#         to_filter.append(id)
-#     if postID:
-#         query += ' postID=? AND'
-#         to_filter.append(postID)
-#     if upVoted:
-#         query += ' upVoted=? AND'
-#         to_filter.append(upVoted)
-#     if downVoted:
-#         query += ' upVoted=? AND'
-#         to_filter.append(downVoted)
-#     if not (id or postID or upVoted):
-#         raise exceptions.NotFound()
-
-#     query = query[:-4] + ';'
-
-#     results = queries._engine.execute(query, to_filter).fetchall()
-
-#     return list(map(dict, results))
